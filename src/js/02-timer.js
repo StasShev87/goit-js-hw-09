@@ -9,6 +9,20 @@ const refs = {
   seconds: document.querySelector('.value[data-seconds]'),
 };
 
+// Set default state
+refs.startBtn.disabled = true;
+
+let endDate = null;
+function selectEndDate(date) {
+  if (date.getDate() < new Date().getDate()) {
+    alert('Please choose a date in the future');
+    return;
+  }
+  endDate = date;
+  refs.startBtn.disabled = false;
+  console.log('Selected end date = ', endDate);
+}
+
 // Add flatpickr
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -20,7 +34,7 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+    selectEndDate(selectedDates[0]);
   },
 };
 flatpickr(refs.endDateInput, options);
