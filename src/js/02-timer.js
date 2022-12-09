@@ -1,3 +1,5 @@
+const { default: flatpickr } = require('flatpickr');
+
 const refs = {
   endDateInput: document.querySelector('#datetime-picker'),
   startBtn: document.querySelector('button[data-start]'),
@@ -6,6 +8,22 @@ const refs = {
   minutes: document.querySelector('.value[data-minutes]'),
   seconds: document.querySelector('.value[data-seconds]'),
 };
+
+// Add flatpickr
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
+// Init flatpickr
+const options = {
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
+  onClose(selectedDates) {
+    console.log(selectedDates[0]);
+  },
+};
+flatpickr(refs.endDateInput, options);
 
 class Timer {
   constructor(endDate, onTick) {
