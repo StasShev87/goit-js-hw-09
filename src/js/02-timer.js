@@ -14,13 +14,13 @@ refs.startBtn.disabled = true;
 
 let endDate = null;
 function selectEndDate(date) {
-  if (date.getDate() < new Date().getDate()) {
+  if (date < Date.now()) {
     alert('Please choose a date in the future');
     return;
   }
   endDate = date;
+
   refs.startBtn.disabled = false;
-  console.log('Selected end date = ', endDate);
 }
 
 // Add flatpickr
@@ -34,7 +34,7 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    selectEndDate(selectedDates[0]);
+    selectEndDate(selectedDates[0].getTime());
   },
 };
 flatpickr(refs.endDateInput, options);
@@ -47,8 +47,24 @@ class Timer {
     this.intervalId = null;
   }
 
+  doJob() {
+    const currentDate = Date.now();
+    const delta = endDate - currentDate;
+    const dDate = this.convertMs(delta);
+    const formatedDeltaDate = {
+      days: this.addLeadingZero(dDate.days),
+      hours: this.addLeadingZero(dDate.hours),
+      minutes: this.addLeadingZero(dDate.minutes),
+      seconds: this.addLeadingZero(dDate.seconds),
+    };
+    this.onTick(formatedDeltaDate);
+  }
+
   start() {
-    this.intervalId = setInterval(() => {}, 1000);
+    this.doJob();
+    this.intervalId = setInterval(() => {
+      this.doJob();
+    }, 1000);
   }
 
   stop() {
@@ -75,6 +91,20 @@ class Timer {
   }
 
   addLeadingZero(value) {
-    return value.padStart(2, '0');
+    return String(value).padStart(2, '0');
   }
+}
+
+refs.startBtn.addEventListener('click', () => {
+  const timer = new Timer(endDate, populateClock);
+  timer.start();
+  refs.endDateInput.disabled = true;
+  refs.startBtn.disabled = true;
+});
+
+function populateClock({ days, hours, minutes, seconds }) {
+  refs.days.textContent = days;
+  refs.hours.textContent = hours;
+  refs.minutes.textContent = minutes;
+  refs.seconds.textContent = seconds;
 }
